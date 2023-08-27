@@ -7,8 +7,8 @@
 const int DHTPIN = 4; // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT22
 
-char ssid[] = "Njeet";    // WiFi Name
-char pass[] = "12345678";    // WiFi Password
+char ssid[] = "Njeet"; 
+char password [] = "12345678";  
 
 unsigned long channelID = 2252713;    // Your ThingSpeak Channel ID
 const char *apiKey = "EOTO9LSTOT80KF24";    // Your ThingSpeak API Key
@@ -19,7 +19,7 @@ DHT_Unified dht(DHTPIN, DHTTYPE);
 void setup() 
 {
   Serial.begin(9600);
-  connectWiFi();
+  WiFi_Connection();
   ThingSpeak.begin(client);
   dht.begin();
 }
@@ -42,37 +42,36 @@ void loop()
   Serial.println("%");
 
   if (!isnan(temperature) && !isnan(humidity)) {
-    sendDataToThingSpeak(temperature, humidity);
+    Send_Data(temperature, humidity);
   } else {
     Serial.println("Failed to read DHT22 values");
   }
 }
 
-void connectWiFi() 
+void WiFi_Connection() 
 {
   while (WiFi.status() != WL_CONNECTED) 
   {
     Serial.print("Connecting to WiFi...");
-    WiFi.begin(ssid, pass);
+    WiFi.begin(ssid, password );
     delay(1000);
   }
   Serial.println("WiFi Connected");
 }
 
-void sendDataToThingSpeak(float temperature, float humidity) 
+void Send_Data(float temperature) 
 {
   ThingSpeak.setField(1, temperature);
-  ThingSpeak.setField(2, humidity);
 
   int httpCode = ThingSpeak.writeFields(channelID, apiKey);
 
   if (httpCode == 200) 
   {
-    Serial.println("Data sent to ThingSpeak");
+    Serial.println("Data sent");
   } 
   
   else 
   {
-    Serial.println("Error sending data to ThingSpeak");
+    Serial.println("Error sending data");
   }
 }
